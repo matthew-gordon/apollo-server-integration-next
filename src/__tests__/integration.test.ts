@@ -25,19 +25,17 @@ describe('nextjsHandler', () => {
         ? startServerAndCreateNextHandler(server, testOptions)
         : startServerAndCreateNextHandler(server);
 
-      const apiPreviewPropsMock = {
-        previewModeId: 'id',
-        previewModeEncryptionKey: 'key',
-        previewModeSigningKey: 'key',
-      };
-
       httpServer.addListener('request', (req, res) =>
         apiResolver(
           req,
           res,
-          { ...parseUrl(req.url || '', true).query },
+          { ...parseUrl(req.url || '', true).query }, // query params to pass through
           handler,
-          apiPreviewPropsMock,
+          {
+            previewModeId: '',
+            previewModeEncryptionKey: '',
+            previewModeSigningKey: '',
+          },
           true,
         ),
       );
