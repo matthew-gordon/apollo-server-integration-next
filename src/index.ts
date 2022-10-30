@@ -1,13 +1,23 @@
-import type { NextApiRequest, NextApiResponse, NextApiHandler } from "next";
+import type { NextApiRequest, NextApiResponse, NextApiHandler } from 'next';
 import type {
   ApolloServer,
   BaseContext,
   ContextFunction,
   HTTPGraphQLRequest,
-} from "@apollo/server";
-import type { WithRequired } from "@apollo/utils.withrequired";
+} from '@apollo/server';
+import type { WithRequired } from '@apollo/utils.withrequired';
+import Iron from '@hapi/iron';
 
-import { parse as urlParse } from "url";
+import { parse as urlParse } from 'url';
+import { setTokenCookie } from './auth-cookies';
+
+export interface LoginSesstionInput {
+  name: string;
+  secret: string;
+  maxAge: number;
+  res: NextApiResponse;
+  session: any;
+}
 
 export interface NextContextFunctionArgument {
   req: NextApiRequest;
@@ -20,15 +30,15 @@ export interface NextHandlerOptions<TContext extends BaseContext> {
 
 export function nextHandler(
   server: ApolloServer<BaseContext>,
-  options?: NextHandlerOptions<BaseContext>
+  options?: NextHandlerOptions<BaseContext>,
 ): NextApiHandler;
 export function nextHandler<TContext extends BaseContext>(
   server: ApolloServer<TContext>,
-  options: WithRequired<NextHandlerOptions<TContext>, "context">
+  options: WithRequired<NextHandlerOptions<TContext>, 'context'>,
 ): NextApiHandler;
 export function nextHandler<TContext extends BaseContext>(
   server: ApolloServer<TContext>,
-  options?: NextHandlerOptions<TContext>
+  options?: NextHandlerOptions<TContext>,
 ): NextApiHandler {
   server.startInBackgroundHandlingStartupErrorsByLoggingAndFailingAllRequests();
 
@@ -55,20 +65,20 @@ export function nextHandler<TContext extends BaseContext>(
         // docs on IncomingMessage.headers) and so we don't bother to lower-case
         // them or combine across multiple keys that would lower-case to the
         // same value.
-        headers.set(key, Array.isArray(value) ? value.join(", ") : value);
+        headers.set(key, Array.isArray(value) ? value.join(', ') : value);
       }
     }
 
     if (!req.method) {
       res.status(500);
-      res.send("`req.method` is not set");
+      res.send('`req.method` is not set');
       return;
     }
 
     const httpGraphQLRequest: HTTPGraphQLRequest = {
       method: req.method.toUpperCase(),
       headers,
-      search: urlParse(req.url || "").search ?? "",
+      search: urlParse(req.url || '').search ?? '',
       body: req.body,
     };
 
@@ -82,7 +92,7 @@ export function nextHandler<TContext extends BaseContext>(
     }
     res.status(httpGraphQLResponse.status || 200);
 
-    if (httpGraphQLResponse.body.kind === "complete") {
+    if (httpGraphQLResponse.body.kind === 'complete') {
       res.send(httpGraphQLResponse.body.string);
       return;
     }
@@ -92,4 +102,13 @@ export function nextHandler<TContext extends BaseContext>(
     }
     res.end();
   };
+}
+
+export async function setLoginSession(input: LoginSesstionInput) {
+  const createdAt = Date.now();
+  // Create a session object with a max age that we can validate later
+  const obj = { ...input.session, createdAt, maxAge: input.maxAge };
+  const token = await Iron.seal(obj, input.secret, Iron.defaults);
+
+  setTokenCookie(input.name, input.maxAge, input.res, token);
 }
