@@ -1,7 +1,7 @@
 {
   "name": "@freshsqueezed/apollo-next",
   "description": "Apollo server integration for nextjs framework",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "author": "Matt Gordon <matt@greenside.tech>",
   "license": "MIT",
   "repository": {
