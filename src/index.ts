@@ -11,6 +11,8 @@ import Iron from '@hapi/iron';
 import { parse as urlParse } from 'url';
 import { getTokenCookie, setTokenCookie } from './auth-cookies';
 
+export * from './auth-cookies';
+
 export interface LoginSesstionInput {
   name: string;
   secret: string;
