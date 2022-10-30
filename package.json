@@ -1,6 +1,5 @@
 {
-  "name": "@as-integrations/nextjs",
-  "private": true,
+  "name": "@freshsqueezed/apollo-next",
   "description": "Apollo server integration for nextjs framework",
   "version": "0.0.1",
   "author": "Matt Gordon <matt@greenside.tech>",
