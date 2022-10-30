@@ -9,7 +9,7 @@ import type { WithRequired } from '@apollo/utils.withrequired';
 import Iron from '@hapi/iron';
 
 import { parse as urlParse } from 'url';
-import { setTokenCookie } from './auth-cookies';
+import { getTokenCookie, setTokenCookie } from './auth-cookies';
 
 export interface LoginSesstionInput {
   name: string;
@@ -111,4 +111,24 @@ export async function setLoginSession(input: LoginSesstionInput) {
   const token = await Iron.seal(obj, input.secret, Iron.defaults);
 
   setTokenCookie(input.name, input.maxAge, input.res, token);
+}
+
+export async function getLoginSession(
+  name: string,
+  secret: string,
+  req: NextApiRequest,
+) {
+  const token = getTokenCookie(name, req);
+
+  if (!token) return;
+
+  const session = await Iron.unseal(token, secret, Iron.defaults);
+  const expiresAt = session.createdAt + session.maxAge * 1000;
+
+  // Validate the expiration date of the session
+  if (Date.now() > expiresAt) {
+    throw new Error('Session expired');
+  }
+
+  return session;
 }
