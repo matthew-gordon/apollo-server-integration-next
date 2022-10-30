@@ -1,7 +1,7 @@
 {
   "name": "@freshsqueezed/apollo-next",
   "description": "Apollo server integration for nextjs framework",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "author": "Matt Gordon <matt@greenside.tech>",
   "license": "MIT",
   "repository": {
@@ -35,11 +35,13 @@
     "@apollo/server": "^4.0.0-alpha.11",
     "@changesets/changelog-github": "0.4.6",
     "@changesets/cli": "2.24.4",
+    "@hapi/iron": "^7.0.0",
     "@types/cookie": "^0.5.1",
     "@types/jest": "29.0.3",
     "@types/node": "14.18.29",
     "@types/react": "^18.0.20",
     "@types/react-dom": "^18.0.6",
+    "cookie": "^0.5.0",
     "cspell": "6.9.1",
     "graphql": "^16.6.0",
     "jest": "29.0.3",
@@ -60,9 +62,5 @@
   "volta": {
     "node": "16.17.0",
     "npm": "8.19.2"
-  },
-  "dependencies": {
-    "@hapi/iron": "^7.0.0",
-    "cookie": "^0.5.0"
   }
 }
