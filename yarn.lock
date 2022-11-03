@@ -199,7 +199,7 @@
     "@apollo/utils.stripsensitiveliterals" "^1.2.0"
     apollo-reporting-protobuf "^3.3.1"
 
-"@apollo/utils.withrequired@^1.0.0":
+"@apollo/utils.withrequired@^1.0.0", "@apollo/utils.withrequired@^1.0.1":
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/@apollo/utils.withrequired/-/utils.withrequired-1.0.1.tgz#7718b2edc87e35c65411cd4069694a33b8db9508"
   integrity sha512-5DYufeISXjz9UqtISIwte86F8ELjTrKVeXcPtdnUnV/PX+4EXUjqIp1FLJTYrCQ1a9OyFAMeCZ2QhUy1D8w7/A==
