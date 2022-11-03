@@ -6,12 +6,7 @@ import type {
   HTTPGraphQLRequest,
 } from '@apollo/server';
 import type { WithRequired } from '@apollo/utils.withrequired';
-import Iron from '@hapi/iron';
-
 import { parse as urlParse } from 'url';
-import { getTokenCookie, setTokenCookie } from './auth-cookies';
-
-export * from './auth-cookies';
 
 export interface LoginSesstionInput {
   name: string;
@@ -30,15 +25,15 @@ export interface NextHandlerOptions<TContext extends BaseContext> {
   context?: ContextFunction<[NextContextFunctionArgument], TContext>;
 }
 
-export function nextHandler(
+export function startServerAndCreateNextHandler(
   server: ApolloServer<BaseContext>,
   options?: NextHandlerOptions<BaseContext>,
 ): NextApiHandler;
-export function nextHandler<TContext extends BaseContext>(
+export function startServerAndCreateNextHandler<TContext extends BaseContext>(
   server: ApolloServer<TContext>,
   options: WithRequired<NextHandlerOptions<TContext>, 'context'>,
 ): NextApiHandler;
-export function nextHandler<TContext extends BaseContext>(
+export function startServerAndCreateNextHandler<TContext extends BaseContext>(
   server: ApolloServer<TContext>,
   options?: NextHandlerOptions<TContext>,
 ): NextApiHandler {
@@ -104,33 +99,4 @@ export function nextHandler<TContext extends BaseContext>(
     }
     res.end();
   };
-}
-
-export async function setLoginSession(input: LoginSesstionInput) {
-  const createdAt = Date.now();
-  // Create a session object with a max age that we can validate later
-  const obj = { ...input.session, createdAt, maxAge: input.maxAge };
-  const token = await Iron.seal(obj, input.secret, Iron.defaults);
-
-  setTokenCookie(input.name, input.maxAge, input.res, token);
-}
-
-export async function getLoginSession(
-  name: string,
-  secret: string,
-  req: NextApiRequest,
-) {
-  const token = getTokenCookie(name, req);
-
-  if (!token) return;
-
-  const session = await Iron.unseal(token, secret, Iron.defaults);
-  const expiresAt = session.createdAt + session.maxAge * 1000;
-
-  // Validate the expiration date of the session
-  if (Date.now() > expiresAt) {
-    throw new Error('Session expired');
-  }
-
-  return session;
 }
